@@ -23,9 +23,9 @@ dependencies {
     testImplementation 'org.assertj:assertj-core:3.23.1'
 }
 
-application {
-    mainClass = 'hexlet.code.App'
-}
+//application {
+//    mainClass = 'hexlet.code.App'
+//}
 
 compileJava {
     options.release = 17
