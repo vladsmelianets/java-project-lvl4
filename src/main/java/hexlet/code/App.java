@@ -1,11 +1,14 @@
 package hexlet.code;
 
+import io.javalin.Javalin;
+
 public final class App {
-    public String getGreeting() {
-        return "Hello World!";
+
+    public static Javalin getApp() {
+        return Javalin.createStandalone();
     }
 
     public static void main(String[] args) {
-        System.out.println(new App().getGreeting());
+        getApp().start();
     }
 }
