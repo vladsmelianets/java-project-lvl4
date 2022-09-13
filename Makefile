@@ -21,6 +21,18 @@ report:
 lint:
 	./gradlew checkstyleMain checkstyleTest
 
+gen-migrations:
+	./gradlew generateMigrations
+
+start:
+	APP_ENV=dev ./gradlew run
+
+start-dist:
+	APP_ENV=prod ./build/install/app/bin/app
+
 build-run: build run
+
+check-updates:
+	./gradlew dependencyUpdates
 
 .PHONY: build
