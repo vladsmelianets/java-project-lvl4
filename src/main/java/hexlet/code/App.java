@@ -1,24 +1,49 @@
 package hexlet.code;
 
 import io.javalin.Javalin;
-import io.javalin.core.JavalinConfig;
+import io.javalin.plugin.rendering.template.JavalinThymeleaf;
+import nz.net.ultraq.thymeleaf.layoutdialect.LayoutDialect;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.extras.java8time.dialect.Java8TimeDialect;
+import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
 public final class App {
 
-    private static final int DEFAULT_PORT = 8080;
+    private static final String DEFAULT_PORT = "8080";
 
     public static void main(String[] args) {
         getApp().start(getPort());
     }
 
     public static Javalin getApp() {
-        Javalin app = Javalin.create(JavalinConfig::enableDevLogging);
+        Javalin app = Javalin.create(config -> {
+            config.enableDevLogging();
+            config.enableWebjars();
+            JavalinThymeleaf.configure(getTemplateEngine());
+        });
         app.get("/", ctx -> ctx.result("Hello World"));
         return app;
     }
 
     private static int getPort() {
-        String port = System.getenv("PORT");
-        return port != null ? Integer.parseInt(port) : DEFAULT_PORT;
+        String port = System.getenv().getOrDefault("PORT", DEFAULT_PORT);
+        return Integer.parseInt(port);
+    }
+
+    private static TemplateEngine getTemplateEngine() {
+        TemplateEngine templateEngine = new TemplateEngine();
+
+        ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
+        templateResolver.setPrefix("/WEB-INF/templates/");
+
+        // Cache is set to true by default. Set to false if you want templates to
+        // be automatically updated when modified.
+        templateResolver.setCacheable(false);
+
+        templateEngine.addTemplateResolver(templateResolver);
+        templateEngine.addDialect(new LayoutDialect());
+        templateEngine.addDialect(new Java8TimeDialect());
+
+        return templateEngine;
     }
 }
