@@ -1,5 +1,6 @@
 package hexlet.code;
 
+import hexlet.code.controller.RootController;
 import io.javalin.Javalin;
 import io.javalin.plugin.rendering.template.JavalinThymeleaf;
 import nz.net.ultraq.thymeleaf.layoutdialect.LayoutDialect;
@@ -21,7 +22,11 @@ public final class App {
             config.enableWebjars();
             JavalinThymeleaf.configure(getTemplateEngine());
         });
-        app.get("/", ctx -> ctx.result("Hello World"));
+
+        app.get("/", RootController.welcome());
+
+        app.before(ctx -> ctx.attribute("ctx", ctx));
+
         return app;
     }
 
@@ -33,16 +38,17 @@ public final class App {
     private static TemplateEngine getTemplateEngine() {
         TemplateEngine templateEngine = new TemplateEngine();
 
+        templateEngine.addDialect(new LayoutDialect());
+        templateEngine.addDialect(new Java8TimeDialect());
+
         ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
         templateResolver.setPrefix("/WEB-INF/templates/");
 
         // Cache is set to true by default. Set to false if you want templates to
         // be automatically updated when modified.
-        templateResolver.setCacheable(false);
+//        templateResolver.setCacheable(false);
 
         templateEngine.addTemplateResolver(templateResolver);
-        templateEngine.addDialect(new LayoutDialect());
-        templateEngine.addDialect(new Java8TimeDialect());
 
         return templateEngine;
     }
