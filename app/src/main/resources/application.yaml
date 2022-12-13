@@ -1,5 +1,5 @@
 datasource:
-  #  default: ${APP_ENV}
+  default: ${APP_ENV}
   dev:
     username: "sa"
     password: "sa"

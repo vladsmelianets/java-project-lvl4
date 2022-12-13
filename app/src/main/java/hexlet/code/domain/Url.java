@@ -24,6 +24,10 @@ public final class Url extends Model {
         this.createdAt = urlCreatedAt;
     }
 
+    public Url(String name) {
+        this.name = name;
+    }
+
     public Long getId() {
         return id;
     }

@@ -1,5 +1,6 @@
 package hexlet.code;
 
+import hexlet.code.controller.UrlController;
 import hexlet.code.controller.RootController;
 import io.javalin.Javalin;
 import io.javalin.plugin.rendering.template.JavalinThymeleaf;
@@ -24,11 +25,30 @@ public final class App {
         });
 
         app.get("/", RootController.welcome());
+        app.get("/urls", UrlController.listUrls());
+        app.get("/urls/{id}", UrlController.showUrl());
+        app.post("/urls", UrlController.newUrl());
 
         app.before(ctx -> ctx.attribute("ctx", ctx));
 
         return app;
     }
+
+//    private static void addRoutes(Javalin app) {
+//        app.get("/", RootController.welcome);
+//        app.get("/about", RootController.about);
+//
+//        app.routes(() -> {
+//            path("articles", () -> {
+//                get(ArticleController.listArticles);
+//                post(ArticleController.createArticle);
+//                get("new", ArticleController.newArticle);
+//                path("{id}", () -> {
+//                    get(ArticleController.showArticle);
+//                });
+//            });
+//        });
+//    }
 
     private static int getPort() {
         String port = System.getenv().getOrDefault("PORT", DEFAULT_PORT);
