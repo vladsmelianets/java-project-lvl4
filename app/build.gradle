@@ -74,6 +74,13 @@ jacocoTestReport {
     }
 }
 
+// modifying checkstyleMain to exclude generated sources from the checks
+checkstyleMain {
+    source = fileTree('src/main/java')
+}
+checkstyleMain.exclude('build/')
+
+
 task generateMigrations(type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
     mainClass = 'hexlet.code.MigrationGenerator'
