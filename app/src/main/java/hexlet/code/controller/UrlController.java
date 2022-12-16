@@ -3,6 +3,7 @@ package hexlet.code.controller;
 import hexlet.code.domain.Url;
 import hexlet.code.domain.query.QUrl;
 import io.javalin.http.Handler;
+
 import java.net.URL;
 
 import java.util.List;
@@ -14,30 +15,28 @@ public final class UrlController {
 
     public static Handler newUrl() {
         return ctx -> {
-            String name = ctx.formParam("url");
-            
+            String urlName = ctx.formParam("url");
+
+            URL parsed = null;
             try {
-                URL parsed = new URL(name);
+                parsed = new URL(urlName);
             } catch (Exception e) {
                 ctx.sessionAttribute("flash", "Некорректный URL");
                 ctx.sessionAttribute("flash-type", "danger");
                 ctx.render("index.html");
             }
 
-//            System.out.println("CREATING URL: " + url);
-            Url url = new Url(parsed.getPath() + ":" + parsed.getPort());
-            Url existing = new QUrl()
-            .name.equalTo(url.getName())
-            .findOne();
-
-            if(existing != null) {
+            Url urlToCreate = new Url(parsed.getPath() + ":" + parsed.getPort());
+            boolean urlExists = new QUrl()
+                    .name.equalTo(urlToCreate.getName()).exists();
+            if (urlExists) {
                 ctx.sessionAttribute("flash", "Страница уже существует");
                 ctx.sessionAttribute("flash-type", "info");
             } else {
-                url.save();
+                urlToCreate.save();
                 ctx.sessionAttribute("flash", "Страница создана");
                 ctx.sessionAttribute("flash-type", "success");
-            }            
+            }
             ctx.redirect("/urls");
         };
     }
