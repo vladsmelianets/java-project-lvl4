@@ -21,14 +21,15 @@ public final class UrlController {
             try {
                 parsed = new URL(urlName);
             } catch (Exception e) {
+                ctx.status(422);
                 ctx.sessionAttribute("flash", "Некорректный URL");
                 ctx.sessionAttribute("flash-type", "danger");
                 ctx.render("index.html");
             }
 
             Url urlToCreate = new Url(parsed.getPath() + ":" + parsed.getPort());
-            boolean urlExists = new QUrl()
-                    .name.equalTo(urlToCreate.getName()).exists();
+
+            boolean urlExists = new QUrl().name.equalTo(urlToCreate.getName()).exists();
             if (urlExists) {
                 ctx.sessionAttribute("flash", "Страница уже существует");
                 ctx.sessionAttribute("flash-type", "info");
