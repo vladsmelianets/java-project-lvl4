@@ -39,4 +39,17 @@ public final class Url extends Model {
     public Instant getCreatedAt() {
         return createdAt;
     }
+
+    @Override
+    public String toString() {
+        return "Url{"
+                + "id="
+                + id
+                + ", name='"
+                + name
+                + '\''
+                + ", createdAt="
+                + createdAt
+                + '}';
+    }
 }

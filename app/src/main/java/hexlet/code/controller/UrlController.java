@@ -15,19 +15,20 @@ public final class UrlController {
 
     public static Handler newUrl() {
         return ctx -> {
-            String urlName = ctx.formParam("url");
+            String inputUrl = ctx.formParam("url");
 
-            URL parsed = null;
+            URL parsed;
+            Url urlToCreate;
             try {
-                parsed = new URL(urlName);
+                parsed = new URL(inputUrl);
+                urlToCreate = mapToUrl(parsed);
             } catch (Exception e) {
                 ctx.status(422);
                 ctx.sessionAttribute("flash", "Некорректный URL");
                 ctx.sessionAttribute("flash-type", "danger");
                 ctx.render("index.html");
+                return;
             }
-
-            Url urlToCreate = new Url(parsed.getPath() + ":" + parsed.getPort());
 
             boolean urlExists = new QUrl().name.equalTo(urlToCreate.getName()).exists();
             if (urlExists) {
@@ -62,5 +63,13 @@ public final class UrlController {
             ctx.attribute("url", url);
             ctx.render("show.html");
         };
+    }
+
+    private static Url mapToUrl(URL parsed) {
+        String urlName = parsed.getProtocol()
+                + "://"
+                + parsed.getHost()
+                + (parsed.getPort() != -1 ? (":" + parsed.getPort()) : "");
+        return new Url(urlName);
     }
 }
