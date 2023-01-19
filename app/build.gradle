@@ -16,7 +16,7 @@ repositories {
 }
 
 //Необходимо для того, что бы сгенерированные Q-классы тоже включались в сборку приложения
-sourceSets.main.java.srcDirs = ['src/main/java', 'build/generated/sources/annotationProcessor/java/main']
+//sourceSets.main.java.srcDirs = ['src/main/java', 'build/generated/sources/annotationProcessor/java/main']
 
 dependencies {
     // doesn't work with javalin higher than 4.6.4
