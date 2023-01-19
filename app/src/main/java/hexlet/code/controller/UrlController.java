@@ -3,6 +3,7 @@ package hexlet.code.controller;
 import hexlet.code.domain.Url;
 import hexlet.code.domain.query.QUrl;
 import io.javalin.http.Handler;
+import io.javalin.http.NotFoundResponse;
 
 import java.net.URL;
 
@@ -23,15 +24,16 @@ public final class UrlController {
                 parsed = new URL(inputUrl);
                 urlToCreate = mapToUrl(parsed);
             } catch (Exception e) {
-                ctx.status(422);
                 ctx.sessionAttribute("flash", "Некорректный URL");
                 ctx.sessionAttribute("flash-type", "danger");
-                ctx.render("index.html");
+                ctx.redirect("/");
                 return;
             }
 
-            boolean urlExists = new QUrl().name.equalTo(urlToCreate.getName()).exists();
-            if (urlExists) {
+            boolean isExist = new QUrl()
+                    .name.equalTo(urlToCreate.getName())
+                    .exists();
+            if (isExist) {
                 ctx.sessionAttribute("flash", "Страница уже существует");
                 ctx.sessionAttribute("flash-type", "info");
             } else {
@@ -60,6 +62,9 @@ public final class UrlController {
             Url url = new QUrl()
                     .id.equalTo(id)
                     .findOne();
+            if (url == null) {
+                throw new NotFoundResponse();
+            }
             ctx.attribute("url", url);
             ctx.render("show.html");
         };

@@ -11,3 +11,5 @@ bin
 .project*
 .classpath
 .idea/
+/app/db.mv.db
+/app/db.trace.db
