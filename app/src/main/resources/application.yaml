@@ -12,3 +12,11 @@ datasource:
 ebean:
   migration:
     run: true
+
+#ebean:
+#  dev:
+#    migration:
+#      run: true
+#  prod:
+#    migration:
+#      run: true
