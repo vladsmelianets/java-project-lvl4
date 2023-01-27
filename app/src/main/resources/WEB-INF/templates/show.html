@@ -2,11 +2,11 @@
 <html lang="ru" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/application.html}">
 
-<section layout:fragment="header" th:object="${url}">
-    <p th:text="*{name}"></p>
+<section layout:fragment="header">
+    <p th:text="${url.name}"></p>
 </section>
 
-<section layout:fragment="content" th:object="${url}">
+<section layout:fragment="content">
     <div class="container-lg mt-5">
         <table class="table table-bordered table-hover mt-3">
             <thead>
@@ -18,8 +18,8 @@
             </thead>
             <tbody>
             <tr>
-                <td th:text="*{id}"></td>
-                <td th:text="*{name}"></td>
+                <td th:text="${url.id}"></td>
+                <td th:text="${url.name}"></td>
                 <td th:text="${#temporals.format(url.createdAt, 'dd-MM-yyyy HH:mm')}"></td>
             </tr>
             </tbody>
@@ -42,13 +42,13 @@
             </tr>
             </thead>
             <tbody>
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
+            <tr th:each="check : ${url.urlChecks}">
+                <td th:text="${check.id}"></td>
+                <td th:text="${check.statusCode}"></td>
+                <td th:text="${check.title}"></td>
+                <td th:text="${check.h1}"></td>
+                <td th:text="${check.description}"></td>
+                <td th:text="${#temporals.format(check.createdAt, 'dd-MM-yyyy HH:mm')}"></td>
             </tr>
             </tbody>
         </table>

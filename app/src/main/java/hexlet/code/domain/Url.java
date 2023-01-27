@@ -8,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -26,6 +27,8 @@ public final class Url extends Model {
 
     public Url(String name) {
         this.name = name;
+        //TODO consider remove null checks for urlChecks everywhere
+        this.urlChecks = new ArrayList<>();
     }
 
     public long getId() {

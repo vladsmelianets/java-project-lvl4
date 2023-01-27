@@ -39,12 +39,21 @@ public final class UrlController {
                 ctx.sessionAttribute("flash", "Страница уже существует");
                 ctx.sessionAttribute("flash-type", "info");
             } else {
+                UrlCheck check = checkUrl(urlToCreate);
+                urlToCreate.getUrlChecks().add(check);
                 urlToCreate.save();
                 ctx.sessionAttribute("flash", "Страница создана");
                 ctx.sessionAttribute("flash-type", "success");
             }
             ctx.redirect("/urls");
         };
+    }
+
+
+
+    //TODO implement url check mechanism
+    private static UrlCheck checkUrl(Url url) {
+        return new UrlCheck(200, "stab title", "stab h1", "stab descr");
     }
 
     public static Handler listUrls() {

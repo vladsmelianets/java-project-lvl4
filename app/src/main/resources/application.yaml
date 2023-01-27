@@ -9,10 +9,6 @@ datasource:
     password: ${DATABASE_PASSWORD}
     url: jdbc:postgresql://${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}
 
-#ebean:
-#  migration:
-#    run: true
-
 ebean:
   dev:
     migration:
