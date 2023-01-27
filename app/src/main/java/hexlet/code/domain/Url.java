@@ -50,11 +50,11 @@ public final class Url extends Model {
 
     @Override
     public String toString() {
-        return "Url{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", createdAt=" + createdAt +
-                ", urlChecks=" + urlChecks +
-                '}';
+        return "Url{"
+                + "id=" + id
+                + ", name='" + name + '\''
+                + ", createdAt=" + createdAt
+                + ", urlChecks=" + urlChecks
+                + '}';
     }
 }
