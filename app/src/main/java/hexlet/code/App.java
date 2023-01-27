@@ -34,22 +34,6 @@ public final class App {
         return app;
     }
 
-//    private static void addRoutes(Javalin app) {
-//        app.get("/", RootController.welcome);
-//        app.get("/about", RootController.about);
-//
-//        app.routes(() -> {
-//            path("articles", () -> {
-//                get(ArticleController.listArticles);
-//                post(ArticleController.createArticle);
-//                get("new", ArticleController.newArticle);
-//                path("{id}", () -> {
-//                    get(ArticleController.showArticle);
-//                });
-//            });
-//        });
-//    }
-
     private static int getPort() {
         String port = System.getenv().getOrDefault("PORT", DEFAULT_PORT);
         return Integer.parseInt(port);
@@ -63,6 +47,7 @@ public final class App {
 
         ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
         templateResolver.setPrefix("/WEB-INF/templates/");
+        templateResolver.setCharacterEncoding("UTF-8");
 
         // Cache is set to true by default. Set to false if you want templates to
         // be automatically updated when modified.

@@ -44,16 +44,17 @@ public final class Url extends Model {
         return urlChecks;
     }
 
+    public void setUrlChecks(List<UrlCheck> urlChecks) {
+        this.urlChecks = urlChecks;
+    }
+
     @Override
     public String toString() {
-        return "Url{"
-                + "id="
-                + id
-                + ", name='"
-                + name
-                + '\''
-                + ", createdAt="
-                + createdAt
-                + '}';
+        return "Url{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", createdAt=" + createdAt +
+                ", urlChecks=" + urlChecks +
+                '}';
     }
 }

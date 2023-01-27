@@ -54,6 +54,9 @@ class AppTest {
         assertThat(response.getBody())
                 .as("page should contain existent sites")
                 .contains("https://www.test-site-one.net");
+        assertThat(response.getBody())
+                .as("page should contain status code")
+                .contains("200");
     }
 
     @Test

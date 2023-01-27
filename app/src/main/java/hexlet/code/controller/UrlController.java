@@ -1,13 +1,15 @@
 package hexlet.code.controller;
 
 import hexlet.code.domain.Url;
+import hexlet.code.domain.UrlCheck;
 import hexlet.code.domain.query.QUrl;
+import hexlet.code.domain.query.QUrlCheck;
 import io.javalin.http.Handler;
 import io.javalin.http.NotFoundResponse;
 
 import java.net.URL;
-
 import java.util.List;
+import java.util.Map;
 
 public final class UrlController {
 
@@ -51,7 +53,15 @@ public final class UrlController {
                     .orderBy()
                     .id.asc()
                     .findList();
+
+            Map<Long, UrlCheck> urlChecks = new QUrlCheck()
+                    .url.id.asMapKey()
+                    .orderBy()
+                    .createdAt.desc()
+                    .findMap();
+
             ctx.attribute("urls", urls);
+            ctx.attribute("urlChecks", urlChecks);
             ctx.render("urls.html");
         };
     }
