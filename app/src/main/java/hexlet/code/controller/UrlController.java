@@ -16,6 +16,34 @@ public final class UrlController {
     private UrlController() {
     }
 
+    public static Handler listUrls() {
+        return ctx -> {
+            List<Url> urls = new QUrl()
+                    .orderBy()
+                    .id.asc()
+                    .findList();
+
+            Map<Long, UrlCheck> urlChecks = new QUrlCheck()
+                    .url.id.asMapKey()
+                    .orderBy()
+                    .createdAt.desc()
+                    .findMap();
+
+            ctx.attribute("urls", urls);
+            ctx.attribute("urlChecks", urlChecks);
+            ctx.render("urls.html");
+        };
+    }
+
+    public static Handler showUrl() {
+        return ctx -> {
+            long id = ctx.pathParamAsClass("id", Long.class).getOrDefault(null);
+            Url url = findById(id);
+            ctx.attribute("url", url);
+            ctx.render("show.html");
+        };
+    }
+
     public static Handler newUrl() {
         return ctx -> {
             String inputUrl = ctx.formParam("url");
@@ -39,7 +67,7 @@ public final class UrlController {
                 ctx.sessionAttribute("flash", "Страница уже существует");
                 ctx.sessionAttribute("flash-type", "info");
             } else {
-                UrlCheck check = checkUrl(urlToCreate);
+                UrlCheck check = check(urlToCreate);
                 urlToCreate.getUrlChecks().add(check);
                 urlToCreate.save();
                 ctx.sessionAttribute("flash", "Страница создана");
@@ -49,51 +77,37 @@ public final class UrlController {
         };
     }
 
+    public static Handler newCheck() {
+        return ctx -> {
+            long urlId = ctx.pathParamAsClass("id", Long.class).getOrDefault(null);
+            Url url = findById(urlId);
+            url.getUrlChecks().add(check(url));
+            //TODO concern: should we save UrlCheck instead? This will require Url setter in urlCheck.
+            url.save();
+            ctx.redirect("/urls/" + urlId);
+        };
+    }
 
-
-    //TODO implement url check mechanism
-    private static UrlCheck checkUrl(Url url) {
+    //TODO implement body parsing
+    private static UrlCheck check(Url url) {
         return new UrlCheck(200, "stab title", "stab h1", "stab descr");
     }
 
-    public static Handler listUrls() {
-        return ctx -> {
-            List<Url> urls = new QUrl()
-                    .orderBy()
-                    .id.asc()
-                    .findList();
-
-            Map<Long, UrlCheck> urlChecks = new QUrlCheck()
-                    .url.id.asMapKey()
-                    .orderBy()
-                    .createdAt.desc()
-                    .findMap();
-
-            ctx.attribute("urls", urls);
-            ctx.attribute("urlChecks", urlChecks);
-            ctx.render("urls.html");
-        };
+    private static Url findById(long id) {
+        Url url = new QUrl()
+                .id.equalTo(id)
+                .findOne();
+        if (url == null) {
+            throw new NotFoundResponse();
+        }
+        return url;
     }
 
-    public static Handler showUrl() {
-        return ctx -> {
-            long id = ctx.pathParamAsClass("id", Long.class).getOrDefault(null);
-            Url url = new QUrl()
-                    .id.equalTo(id)
-                    .findOne();
-            if (url == null) {
-                throw new NotFoundResponse();
-            }
-            ctx.attribute("url", url);
-            ctx.render("show.html");
-        };
-    }
-
-    private static Url mapToUrl(URL parsed) {
-        String urlName = parsed.getProtocol()
+    private static Url mapToUrl(URL url) {
+        String urlName = url.getProtocol()
                 + "://"
-                + parsed.getHost()
-                + (parsed.getPort() != -1 ? (":" + parsed.getPort()) : "");
+                + url.getHost()
+                + (url.getPort() != -1 ? (":" + url.getPort()) : "");
         return new Url(urlName);
     }
 }

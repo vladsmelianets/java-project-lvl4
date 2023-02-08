@@ -1,13 +1,17 @@
 package hexlet.code;
 
-import hexlet.code.controller.UrlController;
 import hexlet.code.controller.RootController;
+import hexlet.code.controller.UrlController;
 import io.javalin.Javalin;
 import io.javalin.plugin.rendering.template.JavalinThymeleaf;
 import nz.net.ultraq.thymeleaf.layoutdialect.LayoutDialect;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.extras.java8time.dialect.Java8TimeDialect;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
+
+import static io.javalin.apibuilder.ApiBuilder.get;
+import static io.javalin.apibuilder.ApiBuilder.path;
+import static io.javalin.apibuilder.ApiBuilder.post;
 
 public final class App {
 
@@ -25,10 +29,15 @@ public final class App {
         });
 
         app.get("/", RootController.welcome());
-        app.get("/urls", UrlController.listUrls());
-        app.get("/urls/{id}", UrlController.showUrl());
-        app.post("/urls", UrlController.newUrl());
-
+        app.routes(() ->
+                path("urls", () -> {
+                    get(UrlController.listUrls());
+                    post(UrlController.newUrl());
+                    path("{id}", () -> {
+                        get(UrlController.showUrl());
+                        post("checks", UrlController.newCheck());
+                    });
+                }));
         app.before(ctx -> ctx.attribute("ctx", ctx));
 
         return app;

@@ -27,7 +27,7 @@
     </div>
     <div class="container-lg mt-5">
         <h2 class="mt-5">Проверки</h2>
-        <form method="post" action="/urls/1/checks">
+        <form th:action="@{/urls/{id}/checks(id=${url.id})}" method="post">
             <button type="submit" class="btn btn-primary">Запустить проверку</button>
         </form>
         <table class="table table-bordered table-hover mt-3">
