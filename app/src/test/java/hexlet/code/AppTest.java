@@ -7,10 +7,18 @@ import io.ebean.Database;
 import io.javalin.Javalin;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
+import okhttp3.HttpUrl;
+import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.MockWebServer;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -20,13 +28,22 @@ class AppTest {
     private static String baseUrl;
     private static Database database;
 
+    private static MockWebServer mockServer;
+
     @BeforeAll
-    public static void setUpCtx() {
+    public static void setUp() throws IOException {
         app = App.getApp();
         app.start(0);
         int port = app.port();
         baseUrl = "http://localhost:" + port;
         database = DB.getDefault();
+
+        mockServer = new MockWebServer();
+        String fixture = Files.readString(
+                Paths.get("./build/resources/test/test-fixture.html"), StandardCharsets.UTF_8);
+        MockResponse mockedResponse = new MockResponse().setBody(fixture);
+        mockServer.enqueue(mockedResponse);
+        mockServer.start();
     }
 
     @BeforeEach
@@ -61,8 +78,10 @@ class AppTest {
 
     @Test
     void testNewUrl() {
-        String inputUrlName = "https://www.new-site.com";
-        String persistedName = "https://www.new-site.com";
+
+        HttpUrl mockUrl = mockServer.url("");
+        String inputUrlName = mockUrl + "somepath";
+        String persistedName = mockUrl.toString().replaceAll("/$", "");
 
         HttpResponse<String> responsePost = Unirest
                 .post(baseUrl + "/urls")

@@ -6,8 +6,11 @@ import hexlet.code.domain.query.QUrl;
 import hexlet.code.domain.query.QUrlCheck;
 import io.javalin.http.Handler;
 import io.javalin.http.NotFoundResponse;
+import kong.unirest.HttpResponse;
+import kong.unirest.Unirest;
 
 import java.net.URL;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -39,6 +42,7 @@ public final class UrlController {
         return ctx -> {
             long id = ctx.pathParamAsClass("id", Long.class).getOrDefault(null);
             Url url = findById(id);
+            sortChecksByTimeDescend(url);
             ctx.attribute("url", url);
             ctx.render("show.html");
         };
@@ -81,6 +85,7 @@ public final class UrlController {
         return ctx -> {
             long urlId = ctx.pathParamAsClass("id", Long.class).getOrDefault(null);
             Url url = findById(urlId);
+//            url.getUrlChecks().add(check(url));
             url.getUrlChecks().add(check(url));
             //TODO concern: should we save UrlCheck instead? This will require Url setter in urlCheck.
             url.save();
@@ -91,7 +96,8 @@ public final class UrlController {
     //TODO consider to make it void
     //TODO implement body parsing
     private static UrlCheck check(Url url) {
-        return new UrlCheck(200, "stab title", "stab h1", "stab descr");
+        HttpResponse<String> response = Unirest.get(url.getName()).asString();
+        return new UrlCheck(response.getStatus(), "stab title", "stab h1", "stab descr");
     }
 
     private static Url findById(long id) {
@@ -110,5 +116,10 @@ public final class UrlController {
                 + url.getHost()
                 + (url.getPort() != -1 ? (":" + url.getPort()) : "");
         return new Url(urlName);
+    }
+
+    private static void sortChecksByTimeDescend(Url url) {
+        List<UrlCheck> checks = url.getUrlChecks();
+        Collections.reverse(checks);
     }
 }
