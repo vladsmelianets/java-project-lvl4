@@ -8,6 +8,9 @@ import io.javalin.http.Handler;
 import io.javalin.http.NotFoundResponse;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 
 import java.net.URL;
 import java.util.Collections;
@@ -85,7 +88,6 @@ public final class UrlController {
         return ctx -> {
             long urlId = ctx.pathParamAsClass("id", Long.class).getOrDefault(null);
             Url url = findById(urlId);
-//            url.getUrlChecks().add(check(url));
             url.getUrlChecks().add(check(url));
             //TODO concern: should we save UrlCheck instead? This will require Url setter in urlCheck.
             url.save();
@@ -94,10 +96,20 @@ public final class UrlController {
     }
 
     //TODO consider to make it void
-    //TODO implement body parsing
     private static UrlCheck check(Url url) {
         HttpResponse<String> response = Unirest.get(url.getName()).asString();
-        return new UrlCheck(response.getStatus(), "stab title", "stab h1", "stab descr");
+        Document document = Jsoup.parse(response.getBody());
+
+        int status = response.getStatus();
+        String title = document.title();
+        Elements h1s = document.select("h1");
+        String h1 = h1s.hasText() ? h1s.first().text() : "";
+        String descr = document
+                .select("meta")
+                .select("[name=description]")
+                .attr("content");
+
+        return new UrlCheck(status, title, h1, descr);
     }
 
     private static Url findById(long id) {
