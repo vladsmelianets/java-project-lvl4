@@ -28,6 +28,13 @@ public final class App {
             JavalinThymeleaf.configure(getTemplateEngine());
         });
 
+        addRoutes(app);
+        app.before(ctx -> ctx.attribute("ctx", ctx));
+
+        return app;
+    }
+
+    private static void addRoutes(Javalin app) {
         app.get("/", RootController.welcome());
         app.routes(() ->
                 path("urls", () -> {
@@ -38,9 +45,6 @@ public final class App {
                         post("checks", UrlController.newCheck());
                     });
                 }));
-        app.before(ctx -> ctx.attribute("ctx", ctx));
-
-        return app;
     }
 
     private static int getPort() {
