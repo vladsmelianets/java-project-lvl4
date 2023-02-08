@@ -10,7 +10,7 @@ import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.select.Elements;
+import org.jsoup.nodes.Element;
 
 import java.net.URL;
 import java.util.Collections;
@@ -102,12 +102,10 @@ public final class UrlController {
 
         int status = response.getStatus();
         String title = document.title();
-        Elements h1s = document.select("h1");
-        String h1 = h1s.hasText() ? h1s.first().text() : "";
-        String descr = document
-                .select("meta")
-                .select("[name=description]")
-                .attr("content");
+        Element h1Element = document.selectFirst("h1");
+        String h1 = h1Element != null ? h1Element.text() : "";
+        Element descrElement = document.selectFirst("meta[name=description]");
+        String descr = descrElement != null ? descrElement.attr("content") : "";
 
         return new UrlCheck(status, title, h1, descr);
     }
