@@ -8,12 +8,12 @@ import io.javalin.http.Handler;
 import io.javalin.http.NotFoundResponse;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
+import kong.unirest.UnirestException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
 import java.net.URL;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -45,7 +45,6 @@ public final class UrlController {
         return ctx -> {
             long id = ctx.pathParamAsClass("id", Long.class).getOrDefault(null);
             Url url = findById(id);
-            sortChecksByTimeDescend(url);
             ctx.attribute("url", url);
             ctx.render("show.html");
         };
@@ -74,8 +73,6 @@ public final class UrlController {
                 ctx.sessionAttribute("flash", "Страница уже существует");
                 ctx.sessionAttribute("flash-type", "info");
             } else {
-                UrlCheck check = check(urlToCreate);
-                urlToCreate.getUrlChecks().add(check);
                 urlToCreate.save();
                 ctx.sessionAttribute("flash", "Страница создана");
                 ctx.sessionAttribute("flash-type", "success");
@@ -88,14 +85,22 @@ public final class UrlController {
         return ctx -> {
             long urlId = ctx.pathParamAsClass("id", Long.class).getOrDefault(null);
             Url url = findById(urlId);
-            url.getUrlChecks().add(check(url));
-            //TODO concern: should we save UrlCheck instead? This will require Url setter in urlCheck.
-            url.save();
+            try {
+                url.getUrlChecks().add(check(url));
+                url.save();
+                ctx.sessionAttribute("flash", "Страница проверена");
+                ctx.sessionAttribute("flash-type", "success");
+            } catch (UnirestException e) {
+                ctx.sessionAttribute("flash", "Некорректный URL");
+                ctx.sessionAttribute("flash-type", "danger");
+            } catch (Exception e) {
+                ctx.sessionAttribute("flash", e.getMessage());
+                ctx.sessionAttribute("flash-type", "danger");
+            }
             ctx.redirect("/urls/" + urlId);
         };
     }
 
-    //TODO consider to make it void
     private static UrlCheck check(Url url) {
         HttpResponse<String> response = Unirest.get(url.getName()).asString();
         Document document = Jsoup.parse(response.getBody());
@@ -113,7 +118,11 @@ public final class UrlController {
     private static Url findById(long id) {
         Url url = new QUrl()
                 .id.equalTo(id)
+                .urlChecks.fetch()
+                .orderBy()
+                .urlChecks.createdAt.desc()
                 .findOne();
+        //TODO move to handlers
         if (url == null) {
             throw new NotFoundResponse();
         }
@@ -126,10 +135,5 @@ public final class UrlController {
                 + url.getHost()
                 + (url.getPort() != -1 ? (":" + url.getPort()) : "");
         return new Url(urlName);
-    }
-
-    private static void sortChecksByTimeDescend(Url url) {
-        List<UrlCheck> checks = url.getUrlChecks();
-        Collections.reverse(checks);
     }
 }
