@@ -14,7 +14,14 @@ The project uses [Ebean ORM](https://ebean.io/) and [Javalin](https://javalin.io
 - Java 17
 - Gradle 7.4.2
 - PostgreSQL
+- Make
 
-### Render
+### Setup
+```shell
+make build # build app, run tests
+make start # run service http://localhost:8080
+```
+
+### Demo
 
 You can try Page Analyzer [on render](https://page-analyzrrr.onrender.com)
