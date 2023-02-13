@@ -61,6 +61,7 @@ class AppTest {
         app.stop();
     }
 
+    //TODO add testShowUrl
     @Test
     void testIndex() {
         HttpResponse<String> response = Unirest.get(baseUrl).asString();
@@ -126,8 +127,6 @@ class AppTest {
                 .orderBy().createdAt.asc()
                 .findList();
         UrlCheck latestCheck = checksAfter.get(0);
-
-        System.out.println("checksAfter= " + checksAfter);
 
         assertThat(checksAfter.size()).as("new check should be persisted in db").isEqualTo(checksBefore.size() + 1);
         assertThat(latestCheck.getTitle()).as("title should be parsed correctly").isEqualTo("stab title");

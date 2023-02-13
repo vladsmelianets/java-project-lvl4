@@ -23,14 +23,14 @@ public final class App {
 
     public static Javalin getApp() {
         Javalin app = Javalin.create(config -> {
-            config.enableDevLogging();
+            if (!isProduction()) {
+                config.enableDevLogging();
+            }
             config.enableWebjars();
             JavalinThymeleaf.configure(getTemplateEngine());
         });
-
         addRoutes(app);
         app.before(ctx -> ctx.attribute("ctx", ctx));
-
         return app;
     }
 
@@ -50,6 +50,14 @@ public final class App {
     private static int getPort() {
         String port = System.getenv().getOrDefault("PORT", DEFAULT_PORT);
         return Integer.parseInt(port);
+    }
+
+    private static String getMode() {
+        return System.getenv().getOrDefault("APP_ENV", "dev");
+    }
+
+    private static boolean isProduction() {
+        return getMode().equals("prod");
     }
 
     private static TemplateEngine getTemplateEngine() {
