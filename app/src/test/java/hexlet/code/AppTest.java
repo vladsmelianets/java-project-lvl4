@@ -103,7 +103,8 @@ class AppTest {
                 .asString();
         String body = redirectedResponse.getBody();
         assertThat(redirectedResponse.getStatus()).as("should show urls page after new url creation").isEqualTo(200);
-        assertThat(body).as("urls page should contain flash msg upon new url creation").contains("Страница создана");
+        assertThat(body).as("urls page should contain flash msg upon new url creation")
+                .contains("Страница успешно добавлена");
         assertThat(body).as("new url should be listed with correct name on urls page").contains(persistedName);
     }
 

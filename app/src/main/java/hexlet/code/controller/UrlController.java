@@ -74,7 +74,7 @@ public final class UrlController {
                 ctx.sessionAttribute("flash-type", "info");
             } else {
                 urlToCreate.save();
-                ctx.sessionAttribute("flash", "Страница создана");
+                ctx.sessionAttribute("flash", "Страница успешно добавлена");
                 ctx.sessionAttribute("flash-type", "success");
             }
             ctx.redirect("/urls");
@@ -88,7 +88,7 @@ public final class UrlController {
             try {
                 url.getUrlChecks().add(check(url));
                 url.save();
-                ctx.sessionAttribute("flash", "Страница проверена");
+                ctx.sessionAttribute("flash", "Страница успешно проверена");
                 ctx.sessionAttribute("flash-type", "success");
             } catch (UnirestException e) {
                 ctx.sessionAttribute("flash", "Некорректный URL");
